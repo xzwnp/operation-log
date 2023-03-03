@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--  引入Springboot自带的Log配置,从而使他们同时生效  -->
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <!-- 输出到文件   -->
+    <appender name="operationLogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>logs/operation</File>
+        <append>true</append>
+        <!--   接收什么级别的日志     -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!--   日志格式     -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--   文件名格式      -->
+            <fileNamePattern>logs/operation.%d.%i.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <!-- %d{format}：输出日志的日期时间，format是可选的日期时间格式。
+                 %level：输出日志级别。
+                 %logger{length}：输出logger的名称，length是可选的logger名称长度，缺省为logger名称的完整长度。
+                 %msg：输出日志信息。%n：输出平台特定的行分隔符。
+                 %thread：输出产生日志的线程名称。
+                 %X{key}：输出指定key的MDC值。
+                 %class：输出产生日志的Java类的名称。
+                 %file：输出产生日志的Java源文件的名称。
+                 %method：输出产生日志的Java方法的名称。-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %t %-5level %X{userId} %logger{30}.- %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="operationLog" additivity="false" level="INFO">
+        <appender-ref ref="operationLogAppender"/>
+    </logger>
+</configuration>

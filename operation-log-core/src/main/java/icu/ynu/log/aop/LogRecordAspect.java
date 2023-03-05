@@ -25,10 +25,7 @@ import org.springframework.util.StopWatch;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * com.example.autoconfig.config.log
@@ -61,7 +58,7 @@ public class LogRecordAspect {
 		//跳过序列化空值属性
 		objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
 
-		ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 5, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<>(10));
+		ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 5, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<>(10), new ThreadPoolExecutor.AbortPolicy());
 		//包装原有线程池
 		logExecutor = TtlExecutors.getTtlExecutorService(executor);
 		this.operatorGetService = operatorGetService;

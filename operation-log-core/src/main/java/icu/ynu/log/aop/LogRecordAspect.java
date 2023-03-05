@@ -16,6 +16,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.expression.EvaluationContext;
@@ -53,12 +54,13 @@ public class LogRecordAspect {
 	@Autowired(required = false)
 	private List<LogPersistenceStrategy> logPersistenceStrategies;
 
-	public LogRecordAspect(IOperatorGetService operatorGetService, ExpressionParser expressionParser, ParameterNameDiscoverer parameterNameDiscoverer) {
+
+	public LogRecordAspect(IOperatorGetService operatorGetService, ExpressionParser expressionParser, ParameterNameDiscoverer parameterNameDiscoverer,
+						   @Autowired @Qualifier("logExecutor") ThreadPoolExecutor executor) {
 		objectMapper = new ObjectMapper();
 		//跳过序列化空值属性
 		objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
 
-		ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 5, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<>(10), new ThreadPoolExecutor.AbortPolicy());
 		//包装原有线程池
 		logExecutor = TtlExecutors.getTtlExecutorService(executor);
 		this.operatorGetService = operatorGetService;

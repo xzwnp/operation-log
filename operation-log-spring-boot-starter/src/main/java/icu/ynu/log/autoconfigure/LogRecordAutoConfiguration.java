@@ -17,6 +17,10 @@ import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.expression.ExpressionParser;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 @Configuration
 @Slf4j
 @ComponentScan(basePackages = "icu.ynu.log") //不加这个扫描不到包下的Component
@@ -46,7 +50,10 @@ public class LogRecordAutoConfiguration {
         return new FileLogPersistenceStrategy();
     }
 
-
+    @Bean(name = "logExecutor")
+    ThreadPoolExecutor logExecutor() {
+        return new ThreadPoolExecutor(1, 5, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<>(10), new ThreadPoolExecutor.AbortPolicy());
+    }
 
 
 }
